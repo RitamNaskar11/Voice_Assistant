@@ -103,7 +103,7 @@ while True:
         else:
             speak("What should I play for?")
 
-    el
+    
     
     
     elif "stop" in query or "exit" in query or "goodbye" in query or "bye" in query:
