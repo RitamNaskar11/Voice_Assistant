@@ -1,6 +1,8 @@
 import pyttsx3
 import speech_recognition as sr
 import datetime
+import webbrowser
+from urllib.parse import quote_plus
 
 engine = pyttsx3.init()
 engine.setProperty("rate", 160)
@@ -73,6 +75,19 @@ while True:
     elif "day" in query:
         current_day = datetime.datetime.now().strftime("%A")
         speak(f"Today is {current_day}")
+
+    elif "youtube" in query:
+        speak("Opening Youtube")
+        webbrowser.open("https://www.youtube.com")
+
+    elif "search for" in query:
+        search_query = query.replace("searc for", "",1).strip()
+        if search_query:
+            speak(f"Searching Google {search_query}")
+            webbrowser.open("https://www.google.com/search?q=" + quote_plus(search_query))
+
+        else:
+            speak("What should I search for?")
     
     elif "stop" in query or "exit" in query or "goodbye" in query or "bye" in query:
         speak("Goodbye! See you again.")
