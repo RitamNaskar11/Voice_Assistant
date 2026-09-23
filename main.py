@@ -28,12 +28,54 @@ speak("Hello! I am Emo, your virtual assistant.")
 #     print("Something Speak")
 #     audio = recognizer.listen(source)
 
+
+# ollama model 
+def ask_ai(query):
+    prompt = f"""You are Emi, a fast voice assistant.Answer in simple, clear English.Keep answers short, around 2-4sentences
+    Avoid unnecessary explanations.Answer the user's question directly User:{query} Emo:"""
+
+    try:
+        url = "http://127.0.0.1:11434/api/generate"
+        data = {
+            "model":"llama3.2:3b",
+            "prompt":prompt,
+            "stream":False,
+            "option": {
+                "num_predict": 120
+            }
+        }
+        
+        session = requests.Session()
+        session.trust_env = False
+
+        response = requests.post(
+            url,
+            json=data,
+            timeout=120
+        )
+
+        response.raise_for_status()
+
+        # AI ka response JSON format mein lena
+        result = response.json()
+
+        return result ["response"].strip()
+    
+    except requests.exceptions.RequestException as e:
+        print("AI Error",e)
+        return "Sorry, I cannot connect to my AI brain right now."
+    except (KeyError,ValueError)as e:
+        print("AI Response error")
+        return "Sorry, I could not process the AI response."
+
+
+# speak and listening function   
 def listen():
     try:
         with sr.Microphone() as source:
             print("\nListening")
 
-            recognizer.adjust_for_ambient_noise(source, duration=0.5)
+            recognizer.adjust_for_ambient_noise(source, duration=0.8)
 
             audio = recognizer.listen(source,timeout=5 , phrase_time_limit=5)
 
@@ -55,6 +97,8 @@ def listen():
     except sr.RequestError:
             speak("Please check your internet connection.")
             return ""
+
+
 # function of telling joke
 def tell_joke():
     try:
@@ -117,6 +161,46 @@ def bettery_check():
     speak(f"Your battery is at {percentage} percent")
     speak(status)
 
+#close any running application function
+
+def close_app(app_name):
+
+    if not isinstance(app_name, str):
+        speak("Please say the application name again.")
+        return
+    
+    app_name = app_name.lower().strip().replace(".exe", "")
+
+    # app_name = app_name.replace(".exe","")
+
+    found = False
+
+    # closed = False
+    for process in psutil.process_iter(["name"]):
+        try:
+            process_name = process.info["name"]
+
+            if not process_name :
+                continue
+            process_name = process_name.lower().replace(".exe","")
+            if app_name == process_name:
+                process.terminate()
+                found = True
+
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            continue
+    if found:
+        speak(f"closing {app_name}")
+    else:
+        speak(f"I could not find {app_name} running")
+
+
+
+
+    
+
+
+
 while True:
     query = listen()
 
@@ -131,24 +215,45 @@ while True:
 
     elif "your name" in query:
         speak("My name is Emo")
+
+
+        
+    
+
 # joke command
     elif "joke" in query:
         speak("Here is joke for you")
         tell_joke()
 
 # weather command
-    elif "weather in " in query:
-        city = query.split("weather in ", 1)[1].strip()
-        if city:
+    elif "weather" in query:
+        city = ""
+        patterns = [
+                    "checking weather in ",
+        "checking weather at ",
+        "checking weather for ",
+        "checking weather ",
+        "check the weather in ",
+        "check the weather at ",
+        "check the weather for ",
+        "check the weather ",
+        "check weather in ",
+        "check weather at ",
+        "check weather for ",
+        "check weather ",
+        "weather in ",
+        "weather at ",
+        "weather for "
+        ]
 
-            speak(f"Did you say {city}? Please say yes or no")
-            confirmation = listen()
-            if "yes" in confirmation:
-                get_weather(city)
-            elif "no" in confirmation:
-                speak("Sorry, please tell me the city name again.")
-            else:
-                speak("I could not confirm the city. Please try again.")
+        for pattern in patterns:
+            if pattern in query:
+                city = query.split(pattern, 1)[1].strip()
+                break
+        city = city.strip(".,?!")
+
+        if city :
+            get_weather(city)
 
         else:
             speak("Please tell me the city name")
@@ -181,6 +286,10 @@ while True:
     elif "open youtube" in query:
         speak("Opening YouTube")    
         subprocess.Popen(["cmd", "/c", "start", "chrome","https://www.youtube.com"])
+
+    elif "open google" in query:
+        speak("Opening google")    
+        subprocess.Popen(["cmd", "/c", "start", "chrome","https://www.google.com"])
 
     elif "play" in query:
         song = query.replace("play","",1).strip()
@@ -241,6 +350,12 @@ while True:
         except (ValueError,IndexError,ZeroDivisionError):
             speak("Sorry, I could not calculate that.")
 
+    elif "close" in query:
+        app_name = query.lower()
+        app_name = app_name.replace("emo", "")
+        app_name = app_name.replace("you", "")
+        app_name = app_name.replace("close", "").strip()
+        close_app(app_name)
 
     
     elif "stop" in query or "exit" in query or "goodbye" in query or "bye" in query:
@@ -248,9 +363,11 @@ while True:
         break
 
 
+    
 
     else:
-        speak("Sorry, I don't know that command yet.")
+        answer = ask_ai(query)
+        speak(answer)
             
 
 
