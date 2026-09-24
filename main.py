@@ -6,6 +6,7 @@ from urllib.parse import quote_plus
 import subprocess
 import requests
 import psutil
+import pygetwindow as gw
 
 
 engine = pyttsx3.init()
@@ -21,7 +22,7 @@ def speak(text):
     engine.runAndWait()
     
 
-speak("Hello! I am Emo, your virtual assistant.")
+speak("Hello!")
 
 
 # with sr.Microphone() as source:
@@ -161,43 +162,51 @@ def bettery_check():
     speak(f"Your battery is at {percentage} percent")
     speak(status)
 
-#close any running application function
+
+# Close any running application
 
 def close_app(app_name):
+    app_name = app_name.lower().strip()
+    # Remove common voice command words
+    for word in ["emo", "you", "please", "close"]:
+        app_name = app_name.replace(word, "").strip()
 
-    if not isinstance(app_name, str):
-        speak("Please say the application name again.")
+    
+
+# Fix speech recognition mistakes
+    app_aliases = {
+        "age":"edge",
+        "this":"edge",
+        "microsoft age":"edge"
+    }
+    app_name = app_aliases.get(app_name,app_name)
+
+    windows = gw.getAllWindows()
+    
+    matched = [
+        window for window in windows
+        if app_name in window.title.lower()
+        and window.title.strip() != ""
+    ]
+
+    if not matched:
+        speak(f"I could not find {app_name} open.")
         return
-    
-    app_name = app_name.lower().strip().replace(".exe", "")
 
-    # app_name = app_name.replace(".exe","")
+    closed = False
 
-    found = False
-
-    # closed = False
-    for process in psutil.process_iter(["name"]):
+    for window in matched:
         try:
-            process_name = process.info["name"]
-
-            if not process_name :
-                continue
-            process_name = process_name.lower().replace(".exe","")
-            if app_name == process_name:
-                process.terminate()
-                found = True
-
-        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            window.close()
+            closed = True
+        except Exception:
             continue
-    if found:
-        speak(f"closing {app_name}")
+
+    if closed:
+        speak(f"Closing {app_name}")
     else:
-        speak(f"I could not find {app_name} running")
+        speak(f"Could not close {app_name}")
 
-
-
-
-    
 
 
 
@@ -297,20 +306,44 @@ while True:
         if song.endswith(" song"):
             song = song[:-5].strip()
             
-
         if song:
             speak(f"Searching Youtube for {song}")   
-            subprocess.Popen(["cmd", "/c", "start","chrome","https://www.youtube.com/results?search_query=" + quote_plus(song)])
+            subprocess.Popen(["cmd", "/c", "start","chrome","https://www.youtube.com/results search_query="+quote_plus(song)])
         else:
             speak("What should I play for?")
 
+    elif "open" in query.lower():
+        app_name = query.lower().replace("open","",1).strip()
+
+        apps={
+            "word": "winword",
+            "microsoft word": "winword",
+            "excel": "excel",
+            "microsoft excel": "excel",
+            "paint": "mspaint",
+            "edge": "msedge",
+            "microsoft edge": "msedge",
+            "whatsapp": "WhatsApp",
+            "code": "vscode"
+        }
+        if app_name in apps:
+            try:
+                subprocess.Popen(["cmd" , "/c","start", "", apps[app_name]])
+                speak(f"Open{app_name}")
+            except Exception:
+                speak(f"Could not open{app_name}")
+
+        else:
+            speak(f"Sorry I didn't find it{app_name}")
+
+
 # open notepad command
-    elif "notepad" in query:
+    elif "open"in query.lower() and "notepad" in query.lower():
         speak("Opening Notepad")
         subprocess.Popen(["notepad"])
 
 # open calculator command
-    elif "calculator" in query:
+    elif "open" in query.lower() and "calculator" in query.lower():
         speak("Opening calculator")
         subprocess.Popen(["calc"])
 
@@ -318,14 +351,10 @@ while True:
     elif "calculate" in query:
         speak("Lets the calculate")
         expression = query.replace("calculate", "", 1).strip()
-
         expression = expression.replace("+", " plus ")
         expression = expression.replace("-", " minus ")
-        # expression = expression.replace("*", " multiply ")
         expression = expression.replace("/", " divide ")
         expression = expression.replace(" x ", " multiply ")
-    
-
         try:
             if "plus" in expression:
                 numbers = expression.split("plus")
@@ -350,12 +379,20 @@ while True:
         except (ValueError,IndexError,ZeroDivisionError):
             speak("Sorry, I could not calculate that.")
 
-    elif "close" in query:
+
+
+
+    elif "close" in query.lower():
         app_name = query.lower()
-        app_name = app_name.replace("emo", "")
-        app_name = app_name.replace("you", "")
-        app_name = app_name.replace("close", "").strip()
-        close_app(app_name)
+
+        for word in ["emo", "you", "please", "close"]:
+            app_name = app_name.replace(word, "").strip()
+
+        if app_name:
+            close_app(app_name)
+
+        else:
+            speak("Please tell me which application to close.")
 
     
     elif "stop" in query or "exit" in query or "goodbye" in query or "bye" in query:
