@@ -32,8 +32,8 @@ speak("Hello!")
 
 # ollama model 
 def ask_ai(query):
-    prompt = f"""You are Emi, a fast voice assistant.Answer in simple, clear English.Keep answers short, around 2-4sentences
-    Avoid unnecessary explanations.Answer the user's question directly User:{query} Emo:"""
+    prompt = f"""You are Emo, a fast voice assistant. Answer in simple, clear English. Keep answers short, around 2-4 sentences.
+    Avoid unnecessary explanations. Answer the user's question directly. User: {query} Emo:"""
 
     try:
         url = "http://127.0.0.1:11434/api/generate"
@@ -41,7 +41,7 @@ def ask_ai(query):
             "model":"llama3.2:3b",
             "prompt":prompt,
             "stream":False,
-            "option": {
+            "options": {
                 "num_predict": 120
             }
         }
@@ -49,7 +49,7 @@ def ask_ai(query):
         session = requests.Session()
         session.trust_env = False
 
-        response = requests.post(
+        response = session.post(
             url,
             json=data,
             timeout=120
@@ -308,9 +308,19 @@ while True:
             
         if song:
             speak(f"Searching Youtube for {song}")   
-            subprocess.Popen(["cmd", "/c", "start","chrome","https://www.youtube.com/results search_query="+quote_plus(song)])
+            subprocess.Popen(["cmd", "/c", "start","chrome","https://www.youtube.com/results?search_query="+quote_plus(song)])
         else:
             speak("What should I play for?")
+
+# open notepad command (must be checked BEFORE the generic "open" command)
+    elif "open" in query.lower() and "notepad" in query.lower():
+        speak("Opening Notepad")
+        subprocess.Popen(["notepad"])
+
+# open calculator command (must be checked BEFORE the generic "open" command)
+    elif "open" in query.lower() and "calculator" in query.lower():
+        speak("Opening calculator")
+        subprocess.Popen(["calc"])
 
     elif "open" in query.lower():
         app_name = query.lower().replace("open","",1).strip()
@@ -336,16 +346,6 @@ while True:
         else:
             speak(f"Sorry I didn't find it{app_name}")
 
-
-# open notepad command
-    elif "open"in query.lower() and "notepad" in query.lower():
-        speak("Opening Notepad")
-        subprocess.Popen(["notepad"])
-
-# open calculator command
-    elif "open" in query.lower() and "calculator" in query.lower():
-        speak("Opening calculator")
-        subprocess.Popen(["calc"])
 
 # calculate the calculation command
     elif "calculate" in query:
