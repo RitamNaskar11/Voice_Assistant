@@ -1,4 +1,4 @@
-# 🎙️ VoiceAI — Emo Voice Assistant
+# VoiceAI — Emo Voice Assistant
 
 **Emo** is a desktop voice assistant written in Python. It listens to your microphone, understands what you say, speaks its reply out loud, and can control your PC, fetch live information from the internet, or answer open-ended questions using a locally running **Ollama** LLM.
 
@@ -15,25 +15,25 @@ Emo:  "The temperature in kolkata is 31 degree Celsius"
 
 ---
 
-## ✨ Features
+## Features
 
 | Area | What Emo can do |
 | --- | --- |
-| 🗣️ **Voice I/O** | Text-to-speech via `pyttsx3`, speech-to-text via Google Speech Recognition (`en-IN`) |
-| 🧠 **AI chat** | Any unrecognised question is answered by a local `llama3.2:3b` model through Ollama |
-| 🌦️ **Weather** | Live temperature, condition and humidity for any city (wttr.in) |
-| 😂 **Jokes** | Random setup + punchline (official-joke-api) |
-| 🔋 **System info** | Battery percentage and charging status |
-| 🕒 **Time & date** | Current time, full date, and day of the week |
-| 🔎 **Web search** | "search for …" opens Google results in Chrome |
-| ▶️ **Media** | "play …" opens YouTube search results |
-| 🪟 **App control** | Open Notepad, Calculator, Word, Excel, Paint, Edge, WhatsApp, VS Code |
-| 🧮 **Math** | Spoken arithmetic (plus / minus / multiply / divide) |
-| ❌ **Close apps** | Closes a running window by matching its title |
+| **Voice I/O** | Text-to-speech via `pyttsx3`, speech-to-text via Google Speech Recognition (`en-IN`) |
+| **AI chat** | Any unrecognised question is answered by a local `llama3.2:3b` model through Ollama |
+| **Weather** | Live temperature, condition and humidity for any city (wttr.in) |
+| **Jokes** | Random setup + punchline (official-joke-api) |
+| **System info** | Battery percentage and charging status |
+| **Time & date** | Current time, full date, and day of the week |
+| **Web search** | "search for …" opens Google results in Chrome |
+| **Media** | "play …" opens YouTube search results |
+| **App control** | Open Notepad, Calculator, Word, Excel, Paint, Edge, WhatsApp, VS Code |
+| **Math** | Spoken arithmetic (plus / minus / multiply / divide) |
+| **Close apps** | Closes a running window by matching its title |
 
 ---
 
-## 🗣️ Voice Command Reference
+## Voice Command Reference
 
 ### Small talk
 
@@ -85,7 +85,7 @@ Emo:  "Recursion is a function calling itself until it reaches a base case."
 ```
 ---
 
-## 📋 Requirements
+## Requirements
 
 | Requirement | Notes |
 | --- | --- |
@@ -114,7 +114,7 @@ All six direct dependencies are pinned in [`requirements.txt`](requirements.txt)
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### 1. Clone the repository
 
@@ -147,7 +147,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🧠 Set Up Ollama (the AI brain)
+## Set Up Ollama (the AI brain)
 
 Emo's open-ended answers come from a **local** LLM. Without Ollama running, everything else still works — Emo just replies *"Sorry, I cannot connect to my AI brain right now."*
 
@@ -176,7 +176,7 @@ Emo's open-ended answers come from a **local** LLM. Without Ollama running, ever
 
 ---
 
-## 🎤 Usage
+## Usage
 
 With the virtual environment activated:
 
@@ -200,7 +200,7 @@ Speak clearly, and allow ~1 second of silence after each command so the recogniz
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 VoiceAI/
@@ -228,7 +228,7 @@ Below those, a `while True:` loop routes each recognised phrase to the right han
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 Everything is tunable near the top of `main.py`:
 
@@ -248,7 +248,7 @@ Everything is tunable near the top of `main.py`:
 
 ---
 
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 | Symptom | Cause & fix |
 | --- | --- |
@@ -267,7 +267,7 @@ Everything is tunable near the top of `main.py`:
 
 ---
 
-## ⚠️ Known Limitations
+## Known Limitations
 
 - **Windows only.** The app-launching and window-closing logic relies on Windows commands and `pygetwindow`.
 - **Internet required for speech recognition.** Google's Web Speech API is used, so there is no offline STT. The AI part, however, is fully local.
@@ -282,7 +282,7 @@ Everything is tunable near the top of `main.py`:
 
 ---
 
-## 🙌 Credits
+## Credits
 
 | Component | Provider |
 | --- | --- |
@@ -294,11 +294,11 @@ Everything is tunable near the top of `main.py`:
 
 ---
 
-## 📄 License
+## License
 
 This is a personal learning project by **Ritam Naskar** — no license file is currently included, so all rights are reserved by the author. Feel free to open an issue or pull request on the [repository](https://github.com/RitamNaskar11/Voice_Assistant).
 
 ---
 
-<p align="center">Built with Python 🐍 and a lot of talking to a computer.</p>
+<p align="center">Built with Python and a lot of talking to a computer.</p>
 
